@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Profile</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Create Your Profile</h1>
+    <form id="createProfileForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <span id="usernameMessage"></span><br>
+        <input type="submit" value="Create Profile">
+    </form>
+    <script>
+        $(document).ready(function () {
+            $('#username').keyup(function () {
+                var username = $(this).val();
+                // Check if the username contains any spaces
+                if (/\s/.test(username)) {
+                    $('#usernameMessage').text("Username cannot contain spaces.");
+                    return;
+                }
+                // Check if the username contains any special characters
+                if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                    $('#usernameMessage').text("Username cannot contain special characters.");
+                    return;
+                }
+                // If the username is valid, send AJAX request to check it
+                $.ajax({
+                    type: 'POST',
+                    url: '/check_username',
+                    data: {'username': username},
+                    success: function (response) {
+                        $('#usernameMessage').text(response.message);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
