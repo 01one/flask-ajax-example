@@ -38,6 +38,32 @@
                     }
                 });
             });
+
+            // Prevent form submission and handle via AJAX
+            $('#createProfileForm').submit(function (e) {
+                e.preventDefault();
+                var username = $('#username').val();
+
+                // Additional validation checks before submitting
+                if (/\s/.test(username)) {
+                    $('#usernameMessage').text("Username cannot contain spaces.");
+                    return;
+                }
+                if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                    $('#usernameMessage').text("Username cannot contain special characters.");
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/create_profile',
+                    data: {'username': username},
+                    success: function (response) {
+                        // Handle the response after profile creation
+                        $('#usernameMessage').text(response.message);
+                    }
+                });
+            });
         });
     </script>
 </body>
