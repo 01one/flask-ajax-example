@@ -34,7 +34,7 @@ def check_username():
 @app.route('/create_profile', methods=['POST'])
 def create_profile():
 	username = request.form['username']
-	if username not in existing_usernames:  # Corrected typo here
+	if username not in existing_usernames:
 		existing_usernames.append(username)
 		return  jsonify({'message': f"Welcome, {username}! Your profile has been created successfully."})
 	else:
