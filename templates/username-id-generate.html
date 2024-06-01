@@ -5,46 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Profile</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #createProfileForm {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #usernameMessage {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Create Your Profile</h1>
     <form id="createProfileForm">
+        <h1>Create Your Profile</h1>
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <span id="usernameMessage"></span><br>
+        <input type="text" id="username" name="username" autocomplete="off" required>
+        <span id="usernameMessage"></span>
         <input type="submit" value="Create Profile">
     </form>
     <script>
         $(document).ready(function () {
             $('#username').keyup(function () {
                 var username = $(this).val();
-                // Check if the username contains any spaces
+                if (username.length === 0) {
+                    $('#usernameMessage').text("");
+                    return;
+                }
                 if (/\s/.test(username)) {
                     $('#usernameMessage').text("Username cannot contain spaces.");
                     return;
                 }
-                // Check if the username contains any special characters
                 if (!/^[a-zA-Z0-9]+$/.test(username)) {
                     $('#usernameMessage').text("Username cannot contain special characters.");
                     return;
                 }
-                // If the username is valid, send AJAX request to check it
-                $.ajax({
-                    type: 'POST',
-                    url: '/check_username',
-                    data: {'username': username},
-                    success: function (response) {
-                        $('#usernameMessage').text(response.message);
-                    }
-                });
-            });
+        $.ajax({
+            type: 'POST',
+            url: '/check_username',
+            data: {'username': username},
+            success: function (response) {
+                $('#usernameMessage').text(response.message);
+                if (response.message === 'Username is available!') {
+                    $('#usernameMessage').css('color', 'green');
+                } else {
+                    $('#usernameMessage').css('color', 'red');
+                }
+            }
+        });
+    });
 
-            // Prevent form submission and handle via AJAX
             $('#createProfileForm').submit(function (e) {
                 e.preventDefault();
                 var username = $('#username').val();
-
-                // Additional validation checks before submitting
+                if (username.length === 0) {
+                    $('#usernameMessage').text("Username cannot be empty.");
+                    return;
+                }
                 if (/\s/.test(username)) {
                     $('#usernameMessage').text("Username cannot contain spaces.");
                     return;
@@ -53,13 +117,11 @@
                     $('#usernameMessage').text("Username cannot contain special characters.");
                     return;
                 }
-
                 $.ajax({
                     type: 'POST',
                     url: '/create_profile',
                     data: {'username': username},
                     success: function (response) {
-                        // Handle the response after profile creation
                         $('#usernameMessage').text(response.message);
                     }
                 });
