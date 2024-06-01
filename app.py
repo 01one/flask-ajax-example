@@ -22,6 +22,7 @@ def index():
 @app.route('/check_username', methods=['POST'])
 def check_username():
 	username = request.form['username']
+	print(username)
 	if username in existing_usernames:
 		return jsonify({'message': 'Username already exists! Please choose a different username.'})
 	elif not is_valid_username(username):
